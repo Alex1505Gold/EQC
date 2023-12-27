@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class = "text-center mt-3">
+    Logged in as : {{request.user.first_name}}  {{request.user.last_name}}
+    <ul>
+        {% with i=0 %}
+        {% for v in visitors %}
+         <li>{{ i|add:"1" }}. {{ v.user.first_name}} {{v.user.last_name}}</li>
+         
+        {% endfor %}
+        {% endwith %}
+       </ul>
+    </div>
+    <br><br>
+    <div class = "text-center mt-3">
+    <a href={% url 'login' %} class = "btn btn-primary">Встать в очередь</a>
+    <a href={% url 'logout' %} class = "btn btn-danger">logout</a>
+    </div>
+{% endblock content %}
