@@ -66,7 +66,7 @@ if (navigator.mediaDevices.getUserMedia) {
                             console.log(resp)
                             const str_resp = JSON.stringify(resp)
                             if (str_resp.indexOf('true') > -1){
-                                window.location.href = window.location.origin
+                                window.location.href = '/student/'
                             }
                             else {
                                 alert(`Your face wasn't recognised\nPlaese try again or contact the administator`)

@@ -10,21 +10,38 @@ from django.core.files.base import ContentFile
 from django.contrib.auth.models import User
 from qsystem.models import Profile
 from collections import deque
+from datetime import datetime
 
 visitors = deque()
 
 @ensure_csrf_cookie
-def login_view(request):
-    return render(request, 'login.html', {})
+def login_student_view(request):
+    return render(request, 'login_student.html', {})
 
 def logout_view(request):
     logout(request)
-    return redirect('login')
+    return redirect('home')
 
-#@login_required
 def home_view(request):
     visitors_req = list(visitors)
     return render(request, 'main.html', {'visitors' : visitors_req})
+
+def prof_view(request):
+    visitors_req = list(visitors)
+    if len(visitors_req) > 0:
+        print(visitors_req[0].photo.path)
+        photo_path_ind = (str(visitors_req[0].photo.path)).find('media')
+        if photo_path_ind > -1:
+            photo_path = (str(visitors_req[0].photo.path))[photo_path_ind:]
+            print(photo_path)
+            return render(request, 'main_professor.html', {'visitors' : visitors_req, 'photo_path' : photo_path})
+    return render(request, 'main_professor.html', {'visitors' : visitors_req, 'photo_path' : ''})
+
+
+@login_required
+def student_view(request):
+    visitors_req = list(visitors)
+    return render(request, 'main_student.html', {'visitors' : visitors_req})
 
 def find_user_view(request):
     if is_ajax(request):
@@ -55,6 +72,7 @@ def find_user_view(request):
                 return JsonResponse({'success': True})
         return JsonResponse({'success': False})
     
-def delete_visitor(request):
-    profile = visitors.popleft()
-    return JsonResponse({'profile' : str(profile)})
+def delete_visitor_view(request):
+    if len(visitors) > 0:
+        profile = visitors.popleft()
+    return redirect('prof')
