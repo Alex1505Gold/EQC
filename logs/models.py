@@ -1,5 +1,6 @@
 from django.db import models
 from qsystem.models import Profile
+from datetime import datetime
 # Create your models here.
 
 class Log(models.Model):
@@ -9,5 +10,6 @@ class Log(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
-        return str(self.id)
+        dt = self.created
+        return "ID: " + str(self.id) + " Time: " + (dt.strftime('%Y-%m-%d %H:%M'))
     
