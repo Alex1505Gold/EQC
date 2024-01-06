@@ -73,3 +73,53 @@ def classify_face(img):
     except:
         # If no faces are found in the input image or an error occurs, return False
         return False
+    
+rus_to_eng = {
+    'а' : 'a', 
+    'б' : 'b',
+    'в' : 'v',
+    'г' : 'g',
+    'д' : 'd',
+    'е' : 'e',
+    'ё' : 'io',
+    'ж' : 'zh',
+    'з' : 'z',
+    'и' : 'i',
+    'й' : 'ii',
+    'к' : 'k',
+    'л' : 'l',
+    'м' : 'm',
+    'н' : 'n',
+    'о' : 'o',
+    'п' : 'p',
+    'р' : 'r',
+    'с' : 's',
+    'т' : 't',
+    'у' : 'u',
+    'ф' : 'f',
+    'х' : 'h',
+    'ш' : 'sh',
+    'щ' : 'sh',
+    'ц' : 'c',
+    'э' : 'e',
+    'ю' : 'y',
+    'я' : 'ia',
+    'ы' : '',
+    'ь' : '',
+    'ъ' : ''
+}
+
+def bio_to_username(name : str, surname : str, group : str):
+    username = ''
+    if len(name) > 0:
+        username += rus_to_eng[name[0]]
+    if len(surname) > 0:
+        username += rus_to_eng[surname[0]]
+    username += '_'
+    for l in group:
+        if l in rus_to_eng:
+            username += rus_to_eng[l]
+        else:
+            username += l
+    return username
+    

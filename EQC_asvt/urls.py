@@ -27,7 +27,11 @@ from .views import (
     find_user_view,
     student_view,
     delete_visitor_view,
-    prof_view
+    prof_view,
+    sign_up_view,
+    create_user_view,
+    verify_view,
+    mail_note_view,
 )
 
 urlpatterns = [
@@ -39,6 +43,10 @@ urlpatterns = [
     path('student/', student_view, name='student'),
     path('del_visitor/', delete_visitor_view, name='del-visitor'),
     path('prof/', prof_view, name='prof'),
+    path('sign_up/', sign_up_view, name='sign-up'),
+    path('create/', create_user_view, name='create'),
+    path('verify/<auth_token>' , verify_view ,name = "verify"),
+    path('notification/' , mail_note_view ,name = "notification"),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

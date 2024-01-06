@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block scripts %}
+    <script src="{% static 'mail.js' %}" defer></script>
+{% endblock scripts %}
+
+{% block content %}
+
+    <div class = "text-center">
+        <video autoplay="true" id="video-element"></video>
+    </div>
+
+    <div class = "text-center mt-3" id="img-element"></div>
+    <div class = "text-center mt-3">
+    <form>
+        <label for="email-element">Введите email</label>
+        <input type="email" id="email-element">
+        <label for="name-element">Введите имя</label>
+        <input type="text" id="name-element">
+        <label for="surname-element">Введите фамилию</label>
+        <input type="text" id="surname-element">
+        <label for="group-element">Введите группу</label>
+        <input type="text" id="group-element">
+      </form>
+    </div>
+    <div class = "text-center mt-3">
+        <button class="btn btn-primary" id="cpt-btn">Sign up</button>
+        <button class="btn btn-info" id="rld-btn">Reload</button>
+    </div>
+
+{% endblock content %}
+

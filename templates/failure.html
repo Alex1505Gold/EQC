@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+    
+    {% block content %}
+    <div class="global-container">
+        <div class="card login-form">
+        <div class="card-body">
+            <h3 class="card-title text-center">Неудача</h3>
+            <div class="card-text text-center">
+                Что-то пошло не так
+            </div>
+        </div>
+    </div>
+    </div>
+    <div class = "text-center mt-3">
+        <a href={% url 'home' %} class = "btn btn-primary">На главную</a>
+        </div>
+    {% endblock content %}
