@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import logout, login
+from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt, csrf_protect, ensure_csrf_cookie
@@ -30,6 +30,10 @@ def sign_up_view(request):
 def login_student_view(request):
     return render(request, 'login_student.html', {})
 
+@ensure_csrf_cookie
+def login_password_view(request):
+    return render(request, 'login_password.html', {})
+
 def logout_view(request):
     logout(request)
     return redirect('home')
@@ -38,7 +42,12 @@ def home_view(request):
     visitors_req = list(visitors)
     return render(request, 'main.html', {'visitors' : visitors_req})
 
+@login_required
 def prof_view(request):
+    curUser = request.user
+    curProfile = Profile.objects.filter(user = curUser).first()
+    if curProfile.acc_type != 'professor':
+        return redirect('login-password')
     visitors_req = list(visitors)
     if len(visitors_req) > 0:
         print(visitors_req[0].photo.path)
@@ -54,6 +63,19 @@ def prof_view(request):
 def student_view(request):
     visitors_req = list(visitors)
     return render(request, 'main_student.html', {'visitors' : visitors_req})
+
+def password_auth_view(request):
+    if is_ajax(request):
+        username = request.POST.get('user')
+        password = request.POST.get('password')
+        curUser = authenticate(username=username, password=password)
+        if curUser is None:
+            return JsonResponse({'success' : False, 'info' : 'Username or password is incorrect'})
+        curProf = Profile.objects.filter(user=curUser).first()
+        if curProf.acc_type != 'professor':
+            return JsonResponse({'success' : False, 'info' : 'You are not a professor'})
+        login(request, curUser)
+        return JsonResponse({'success' : True, 'info' : ''})
 
 def find_user_view(request):
     if is_ajax(request):
@@ -76,7 +98,7 @@ def find_user_view(request):
                 profile = Profile.objects.get(user=user)
                 x.profile = profile
                 x.save()
-                if not profile.is_verifed:
+                if not profile.is_verified:
                     x.succesful = False
                     x.save()
                     return JsonResponse({'success': False})
@@ -133,6 +155,16 @@ def create_user_view(request):
         _, str_img = photo.split(';base64')
         decoded_file = base64.b64decode(str_img)
         try:        
+            log = Log()
+            log.photo.save('upload.png', ContentFile(decoded_file))
+            log.save()
+            
+            res = classify_face(log.photo.path)
+            if not res:
+                return JsonResponse({'success' : False, 'info' : 'Face cannot be detected'})
+            if res != "Unknown":
+                return JsonResponse({'success' : False, 'info' : 'Your photo is already attached to some profile\nPlease contact the administrator'})
+            
             if User.objects.filter(email = email).first():
               return JsonResponse({'success' : False, 'info' : 'Email is taken'})
 
