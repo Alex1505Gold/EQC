@@ -31,11 +31,20 @@
 <div class = "inner-right">
     <div class = "mt-3">Список студентов</div>
     <ol>
+        <img src = "/{{photo_highlighted_path}}" width = 240>
         {% for s in students %}
+        {% if  s == highlighted%}
+         <li><a class = "highlighted" href="/pick_visitor/{{ s.user.username }}">{{ s.user.first_name}} {{s.user.last_name}}</a></li>
+         {% else %}
          <li><a href="/pick_visitor/{{ s.user.username }}">{{ s.user.first_name}} {{s.user.last_name}}</a></li>
-         
+         {% endif %}
         {% endfor %}
        </ol>
+       <div class = "text-center mt-3">
+    <a href={% url 'dec' %} class = "btn btn-primary"><span>&#8592;</span></a>
+    <a href={% url 'pick-btn' %} class = "btn btn-primary">Вызвать</a>
+    <a href={% url 'inc' %} class = "btn btn-primary"><span>&#8594;</span></a>
+    </div>
     </div>
     <br><br>
 </div>

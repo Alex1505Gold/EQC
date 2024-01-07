@@ -35,6 +35,9 @@ from .views import (
     password_auth_view,
     login_password_view,
     pick_visitor_view,
+    increment_view,
+    decrement_view,
+    pick_button_view,
 )
 
 urlpatterns = [
@@ -53,6 +56,9 @@ urlpatterns = [
     path('password_auth/', password_auth_view, name = 'password-auth'),
     path('login_password/', login_password_view, name = 'login-password'),
     path('pick_visitor/<username>', pick_visitor_view, name = 'pick-visitor'),
+    path('inc/', increment_view, name = 'inc'),
+    path('dec/', decrement_view, name = 'dec'),
+    path('pick_btn/', pick_button_view, name = 'pick-btn'),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

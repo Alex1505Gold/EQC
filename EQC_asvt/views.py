@@ -16,6 +16,7 @@ from django.core.mail import send_mail
 
 visitors = deque()
 curVisitor = None
+counter = 0
 
 allowed_mails_list = [
     "sgolenkov2002@gmail.com",
@@ -58,8 +59,13 @@ def prof_view(request):
         if photo_path_ind > -1:
             photo_path = (str(curVisitor.photo.path))[photo_path_ind:]
             print(photo_path)
+    highlighted = students[globals()['counter']]
+    photo_path_ind = (str(highlighted.photo.path)).find('media')
+    if photo_path_ind > -1:
+        photo_highlited_path = (str(highlighted.photo.path))[photo_path_ind:]
     return render(request, 'main_professor.html', {'visitors' : visitors_req, 'photo_path' : photo_path,
-                                                   'students' : students, 'curVisitor' : curVisitor})
+                                                   'students' : students, 'curVisitor' : curVisitor,
+                                                   'highlighted' : highlighted, 'photo_highlighted_path' : photo_highlited_path})
 
 
 @login_required
@@ -115,6 +121,8 @@ def find_user_view(request):
                 return JsonResponse({'success': True})
         return JsonResponse({'success': False})
     
+#Block of functions for queue managment    
+
 def delete_visitor_view(request):
     if len(visitors) > 0:
         globals()['curVisitor'] = visitors.popleft()
@@ -134,8 +142,25 @@ def pick_visitor_view(request, username):
         globals()['curVisitor'] = tmpStudent
         while len(tmpDeq) > 0:
             tmpStudent = tmpDeq.pop()
-            visitors.appendleft()
+            visitors.appendleft(tmpStudent)
     return redirect('prof')
+
+def increment_view(request):
+    globals()['counter'] += 1
+    globals()['counter'] = globals()['counter'] % len(Profile.objects.filter(acc_type='Student').all())
+    return redirect('prof')
+
+def decrement_view(request):
+    globals()['counter'] -= 1
+    globals()['counter'] = globals()['counter'] % len(Profile.objects.filter(acc_type='Student').all())
+    return redirect('prof')
+
+def pick_button_view(request):
+    students = Profile.objects.filter(acc_type='Student').all()
+    username = str(students[globals()['counter']].user.username)
+    return redirect('/pick_visitor/' + username)
+
+#Block of functions for user registration
 
 def mail_note_view(request):
     return render(request, 'mail_notification.html', {})
