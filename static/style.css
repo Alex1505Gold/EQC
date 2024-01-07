@@ -1,3 +1,25 @@
 .not-visible {
     display: none;
 }
+.parent {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+  }
+  .inner-left {
+     width: 70%;
+  
+  }
+  .inner-right {
+    -ms-flex-preferred-size: 250px;
+        flex-basis: 250px;
+    -webkit-box-flex: 1;
+        -ms-flex-positive: 1;
+            flex-grow: 1;
+  
+  }

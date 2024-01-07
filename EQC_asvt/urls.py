@@ -34,6 +34,7 @@ from .views import (
     mail_note_view,
     password_auth_view,
     login_password_view,
+    pick_visitor_view,
 )
 
 urlpatterns = [
@@ -51,6 +52,7 @@ urlpatterns = [
     path('notification/' , mail_note_view ,name = "notification"),
     path('password_auth/', password_auth_view, name = 'password-auth'),
     path('login_password/', login_password_view, name = 'login-password'),
+    path('pick_visitor/<username>', pick_visitor_view, name = 'pick-visitor'),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

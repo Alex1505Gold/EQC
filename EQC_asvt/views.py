@@ -15,6 +15,7 @@ from .settings import EMAIL_HOST_USER
 from django.core.mail import send_mail
 
 visitors = deque()
+curVisitor = None
 
 allowed_mails_list = [
     "sgolenkov2002@gmail.com",
@@ -40,7 +41,7 @@ def logout_view(request):
 
 def home_view(request):
     visitors_req = list(visitors)
-    return render(request, 'main.html', {'visitors' : visitors_req})
+    return render(request, 'main.html', {'visitors' : visitors_req, 'curVisitor' : curVisitor})
 
 @login_required
 def prof_view(request):
@@ -49,20 +50,22 @@ def prof_view(request):
     if curProfile.acc_type != 'professor':
         return redirect('login-password')
     visitors_req = list(visitors)
-    if len(visitors_req) > 0:
-        print(visitors_req[0].photo.path)
-        photo_path_ind = (str(visitors_req[0].photo.path)).find('media')
+    students = Profile.objects.filter(acc_type='Student').all()
+    photo_path = ''
+    if curVisitor is not None:
+        print(curVisitor.photo.path)
+        photo_path_ind = (str(curVisitor.photo.path)).find('media')
         if photo_path_ind > -1:
-            photo_path = (str(visitors_req[0].photo.path))[photo_path_ind:]
+            photo_path = (str(curVisitor.photo.path))[photo_path_ind:]
             print(photo_path)
-            return render(request, 'main_professor.html', {'visitors' : visitors_req, 'photo_path' : photo_path})
-    return render(request, 'main_professor.html', {'visitors' : visitors_req, 'photo_path' : ''})
+    return render(request, 'main_professor.html', {'visitors' : visitors_req, 'photo_path' : photo_path,
+                                                   'students' : students, 'curVisitor' : curVisitor})
 
 
 @login_required
 def student_view(request):
     visitors_req = list(visitors)
-    return render(request, 'main_student.html', {'visitors' : visitors_req})
+    return render(request, 'main_student.html', {'visitors' : visitors_req, 'curVisitor' : curVisitor})
 
 def password_auth_view(request):
     if is_ajax(request):
@@ -114,7 +117,24 @@ def find_user_view(request):
     
 def delete_visitor_view(request):
     if len(visitors) > 0:
-        profile = visitors.popleft()
+        globals()['curVisitor'] = visitors.popleft()
+    else:
+        globals()['curVisitor'] = None
+    return redirect('prof')
+
+def pick_visitor_view(request, username):
+    pickUser = User.objects.filter(username=username).first()
+    pickProfile = Profile.objects.filter(user=pickUser).first()
+    if pickProfile in visitors:
+        tmpDeq = deque()
+        tmpStudent = visitors.popleft()
+        while tmpStudent != pickProfile:
+            tmpDeq.append(tmpStudent)
+            tmpStudent = visitors.popleft()
+        globals()['curVisitor'] = tmpStudent
+        while len(tmpDeq) > 0:
+            tmpStudent = tmpDeq.pop()
+            visitors.appendleft()
     return redirect('prof')
 
 def mail_note_view(request):
@@ -168,7 +188,7 @@ def create_user_view(request):
             if User.objects.filter(email = email).first():
               return JsonResponse({'success' : False, 'info' : 'Email is taken'})
 
-            user_obj = User.objects.create(username = username, email=email)
+            user_obj = User.objects.create(username = username, email=email, first_name=name, last_name=surname)
             user_obj.set_password(password)
 
             profile_obj = Profile.objects.filter(user = user_obj).first()#create(user = user_obj , token = str(uuid.uuid4))

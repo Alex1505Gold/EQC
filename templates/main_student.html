@@ -3,6 +3,11 @@
 {% block content %}
 <div class = "text-center mt-3">
     Logged in as : {{request.user.first_name}}  {{request.user.last_name}}
+    {% if curVisitor is not None %}
+    <div class = "text-center mt-3">
+        Сейчас на приеме: {{curVisitor.user.first_name}}  {{curVisitor.user.last_name}}
+    </div>
+    {% endif %}
     <div class = "mt-3">Очередь</div>
     <ol>
         {% for v in visitors %}
